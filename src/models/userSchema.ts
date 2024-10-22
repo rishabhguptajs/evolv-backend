@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
+import { UserInterface } from '../interfaces/userInterface';
 
-const userSchema = new Schema({
+const userSchema = new Schema<UserInterface>({
     personal_info: {
         first_name: {
             type: String,
@@ -40,7 +42,7 @@ const userSchema = new Schema({
         },
         provider: {
             type: String,
-            enum: ['google', 'facebook'],
+            enum: ['google', 'facebook', 'github'],
         },
         provider_id: {
             type: String,
@@ -94,9 +96,60 @@ const userSchema = new Schema({
     }],
     last_login: {
         type: Date,
+    },
+    behavior_tracking: {
+        last_activity: {
+            type: Date,
+        },
+        activity_log: [{
+            action: {
+                type: String,
+                required: true,
+            },
+            timestamp: {
+                type: Date,
+                default: Date.now,
+            },
+            metadata: {
+                type: Schema.Types.Mixed,
+            }
+        }],
+        session_duration: {
+            type: Number,
+        },
+        device_info: {
+            type: String,
+        },
+        location: {
+            type: {
+                type: String,
+                enum: ['Point'],
+                required: true
+            },
+            coordinates: {
+                type: [Number],
+                required: true
+            }
+        }
+    },
+    user_role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user',
     }
 }, { timestamps: true });
 
-const User = model('User', userSchema);
+// hash the password before saving to the database
+userSchema.pre('save', async function (next) {
+    if (this.isModified('password')) {
+        const salt = await bcrypt.genSalt(10);
+        if (typeof this.personal_info.password === 'string') {
+            this.personal_info.password = await bcrypt.hash(this.personal_info.password, salt);
+        }
+    }
+    next();
+});
+
+const User = model<UserInterface>('User', userSchema);
 
 export default User;
