@@ -32,7 +32,6 @@ const userSchema = new Schema<UserInterface>({
         },
         address: {
             type: String,
-            required: true,
         },
     },
     oauth_info: [{
