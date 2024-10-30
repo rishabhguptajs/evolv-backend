@@ -16,4 +16,11 @@ router.get('/google/callback',
 // @desc    Auth with Github
 router.get('/github', passport.authenticate('github', { scope: ['profile', 'email'] }))
 
+router.get('/github/callback',
+    passport.authenticate("github", { failureRedirect: "/login" }),
+    (req, res) => {
+        res.redirect("http://localhost:3000/dashboard")
+    }
+)
+
 export default router
