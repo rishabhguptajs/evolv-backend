@@ -1,5 +1,6 @@
 import express from 'express'
 import passport from 'passport'
+import { loginController, signupController } from '../controllers/authController'
 
 const router = express.Router()
 
@@ -22,5 +23,32 @@ router.get('/github/callback',
         res.redirect("http://localhost:3000/dashboard")
     }
 )
+
+// @desc    Logout User
+router.get('/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.redirect("http://localhost:3000");
+    });
+})
+// @desc    Sign Up using Email and Password
+router.post('/signup', async (req, res) => {
+    try {
+        await signupController(req, res);
+    } catch (error) {
+        res.status(500).json({ message: 'Error during signup', error });
+    }
+});
+
+// @desc    Login using Email and Password
+router.post('/login', async (req, res) => {
+    try {
+        await loginController(req, res);
+    } catch (error) {
+        res.status(500).json({ message: 'Error during login', error });
+    }
+});
 
 export default router
