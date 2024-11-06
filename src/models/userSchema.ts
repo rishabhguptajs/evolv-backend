@@ -95,10 +95,12 @@ const userSchema = new Schema<UserInterface>({
     }],
     last_login: {
         type: Date,
+        default: Date.now,
     },
     behavior_tracking: {
         last_activity: {
             type: Date,
+            default: Date.now,
         },
         activity_log: [{
             action: {
@@ -123,12 +125,10 @@ const userSchema = new Schema<UserInterface>({
             type: {
                 type: String,
                 enum: ['Point'],
-                required: true
             },
             coordinates: {
                 type: [Number],
-                required: true
-            }
+            },
         }
     },
     user_role: {
@@ -138,9 +138,10 @@ const userSchema = new Schema<UserInterface>({
     }
 }, { timestamps: true });
 
-// hash the password before saving to the database
+userSchema.index({ location: '2dsphere' }, { sparse: true });
+
 userSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
+    if (this.isModified('personal_info.password')) {
         const salt = await bcrypt.genSalt(10);
         if (typeof this.personal_info.password === 'string') {
             this.personal_info.password = await bcrypt.hash(this.personal_info.password, salt);
