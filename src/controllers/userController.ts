@@ -82,6 +82,27 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<Re
     }
 };
 
+export const deleteUserProfile = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const userID: string = req.params.id;
+
+        if (!userID) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        const deletedUser: UserInterface | null = await User.findByIdAndDelete(userID);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({ message: "User profile deleted successfully!" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error deleting user profile", error: error instanceof Error ? error.message : error });
+    }
+};
+
 export const getUserLinks = async (req: Request, res: Response): Promise<Response> => {
     const userID: string = req.params.id;
 
