@@ -118,6 +118,9 @@ const userSchema = new Schema<UserInterface>({
         session_duration: {
             type: Number,
         },
+        total_time_spent: {
+            type: Number,
+        },
         device_info: {
             type: String,
         },
