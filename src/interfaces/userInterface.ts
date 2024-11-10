@@ -17,7 +17,7 @@ export interface UserInterface {
         refresh_token?: string;
         expires_at?: Date;
     }[];
-    profile_pic?: string;
+    profile_pic?: Buffer;
     preferences?: {
         notification_pref?: 'daily' | 'weekly' | 'monthly';
         language_pref?: string;

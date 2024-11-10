@@ -60,8 +60,8 @@ const userSchema = new Schema<UserInterface>({
         }
     }],
     profile_pic: {
-        type: String,
-        default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+        type: Buffer,
+        default: Buffer.from('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'),
     },
     preferences: {
         notification_pref: {

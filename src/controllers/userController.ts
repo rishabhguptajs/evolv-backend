@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import User from '../models/userSchema';
 import { UserInterface } from '../interfaces/userInterface';
+import multer from 'multer';
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 export const getUserProfile = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -131,3 +135,31 @@ export const getUserLinks = async (req: Request, res: Response): Promise<Respons
         return res.status(500).json({ message: "Error getting user links", error: error instanceof Error ? error.message : "Internal server error" });
     }
 };
+
+export const updateProfilePicture = [upload.single('profilePhoto'), async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const userID: string = req.params.id;
+
+        if (!userID) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ message: "Profile photo is required" });
+        }
+
+        const user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.profile_pic = req.file.buffer;
+
+        await user.save();
+
+        return res.status(200).json({ message: "Profile picture updated successfully!" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error updating profile picture", error: error instanceof Error ? error.message : error });
+    }
+}];
