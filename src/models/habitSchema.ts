@@ -27,10 +27,12 @@ const habitSchema = new Schema({
         date: {
             type: Date,
             required: true,
+            default: Date.now,
         },
         completed: {
             type: Boolean,
             required: true,
+            default: false,
         },
     }],
     streak: {
