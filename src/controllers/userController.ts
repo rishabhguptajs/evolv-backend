@@ -32,7 +32,7 @@ export const getUserProfile = async (req: Request, res: Response): Promise<Respo
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const userID: string = req.params.id;
+        const userID = req.params.id;
         const { first_name, last_name, email, phone, address }: { first_name: string; last_name: string; email: string; phone?: string; address?: string } = req.body;
 
         if (!userID) {
@@ -88,7 +88,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<Re
 
 export const deleteUserProfile = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const userID: string = req.params.id;
+        const userID = req.params.id;
 
         if (!userID) {
             return res.status(400).json({ message: "User ID is required" });
@@ -108,7 +108,7 @@ export const deleteUserProfile = async (req: Request, res: Response): Promise<Re
 };
 
 export const getUserLinks = async (req: Request, res: Response): Promise<Response> => {
-    const userID: string = req.params.id;
+    const userID = req.params.id;
 
     if (!userID) {
         return res.status(400).json({ message: "User ID is required" });
@@ -138,7 +138,7 @@ export const getUserLinks = async (req: Request, res: Response): Promise<Respons
 
 export const updateProfilePicture = [upload.single('profilePhoto'), async (req: Request, res: Response): Promise<Response> => {
     try {
-        const userID: string = req.params.id;
+        const userID = req.params.id;
 
         if (!userID) {
             return res.status(400).json({ message: "User ID is required" });
