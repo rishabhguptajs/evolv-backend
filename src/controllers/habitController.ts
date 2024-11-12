@@ -144,3 +144,116 @@ export const markHabitAsDoneForDay = async (req: Request, res: Response): Promis
         return res.status(500).json({ message: "Error marking habit as done", error: error instanceof Error ? error.message : error });
     }
 }
+
+export const undoCompletedHabitForDay = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        const habit = await Habit.findById(habitID);
+
+        if (!habit) {
+            return res.status(404).json({ message: "Habit not found" });
+        }
+
+        const today = new Date().toISOString().slice(0, 10);
+        const todayProgress = habit.progress.find(entry => entry.date.toISOString().slice(0, 10) === today);
+
+        if (!todayProgress) {
+            return res.status(400).json({ message: "Habit not marked as done for today" });
+        }
+
+        if (!todayProgress.completed) {
+            return res.status(400).json({ message: "Habit already marked as not done for today" });
+        }
+
+        const index = habit.progress.findIndex(entry => entry.date.toISOString().slice(0, 10) === today);
+        habit.progress.splice(index, 1);
+
+        habit.streak = habit.streak - 1;
+
+        await habit.save();
+
+        return res.status(200).json({ habit, message: "Habit undone for today" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error undoing completed habit", error: error instanceof Error ? error.message : error });
+        
+    }
+}
+
+export const getStreakForHabit = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        const habit = await Habit.findById(habitID);
+
+        if (!habit) {
+            return res.status(404).json({ message: "Habit not found" });
+        }
+
+        return res.status(200).json({ streak: habit.streak, message: "Streak fetched successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error fetching streak for habit", error: error instanceof Error ? error.message : error });
+    }
+}
+
+export const getWeeklyHabitSummary = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        const habit = await Habit.findById(habitID);
+
+        if (!habit) {
+            return res.status(404).json({ message: "Habit not found" });
+        }
+
+        const lastWeekProgress = habit.progress.filter(entry => {
+            const daysAgo = (new Date().getTime() - new Date(entry.date).getTime()) / (1000 * 60 * 60 * 24);
+            return daysAgo <= 7;
+        });
+
+        return res.status(200).json({ progress: lastWeekProgress, message: "Weekly habit summary fetched successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error fetching weekly habit summary", error: error instanceof Error ? error.message : error });
+    }
+}
+
+export const getMonthlyHabitSummary = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        const habit = await Habit.findById(habitID);
+
+        if (!habit) {
+            return res.status(404).json({ message: "Habit not found" });
+        }
+
+        const lastMonthProgress = habit.progress.filter(entry => {
+            const daysAgo = (new Date().getTime() - new Date(entry.date).getTime()) / (1000 * 60 * 60 * 24);
+            return daysAgo <= 30;
+        });
+
+        return res.status(200).json({ progress: lastMonthProgress, message: "Monthly habit summary fetched successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error fetching monthly habit summary", error: error instanceof Error ? error.message : error });
+    }
+}
