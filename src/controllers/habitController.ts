@@ -62,3 +62,26 @@ export const createHabit = async (req: Request, res: Response): Promise<Response
         return res.status(500).json({ message: "Error creating habit", error: error instanceof Error ? error.message : error });
     }
 };
+
+export const getHabits = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const userID = req.params.id;
+
+        if (!userID) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        const user = await User.findById(userID);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const habits = await Habit.find({ user_id: userID });
+
+        return res.status(200).json({ habits, message: "Habits fetched successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error fetching habits", error: error instanceof Error ? error.message : error });
+    }
+}
