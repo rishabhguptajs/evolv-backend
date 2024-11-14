@@ -38,6 +38,17 @@ const habitSchema = new Schema({
         type: Number,
         default: 0,
     },
+    reminders: [{
+        time: {
+            type: Date,
+            required: true,
+        },
+        frequency: {
+            type: String,
+            enum: ['once', 'daily', 'weekly', 'monthly'],
+            required: true,
+        },
+    }],
 }, { timestamps: true });
 
 const Habit = model('Habit', habitSchema);
