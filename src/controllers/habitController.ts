@@ -5,13 +5,11 @@ import { Request, Response } from "express";
 export const createHabit = async (req: Request, res: Response): Promise<Response> => {
     try {
         const userID = req.params.id;
-
         if (!userID) {
             return res.status(400).json({ message: "User ID is required" });
         }
 
         const user = await User.findById(userID);
-
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -257,3 +255,65 @@ export const getMonthlyHabitSummary = async (req: Request, res: Response): Promi
         return res.status(500).json({ message: "Error fetching monthly habit summary", error: error instanceof Error ? error.message : error });
     }
 }
+
+export const deleteHabit = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        await Habit.findByIdAndDelete(habitID);
+
+        return res.status(200).json({ message: "Habit deleted successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error deleting habit", error: error instanceof Error ? error.message : error });
+    }
+}
+
+export const updateHabit = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id: habitID } = req.params;
+
+        if (!habitID) {
+            return res.status(400).json({ message: "Habit ID is required" });
+        }
+
+        const { name, description, frequency, target } = req.body;
+
+        if(!name && !description && !frequency && !target) {
+            return res.status(400).json({ message: "At least one field is required to update" });
+        }
+
+        const habit = await Habit.findById(habitID);
+
+        if (!habit) {
+            return res.status(404).json({ message: "Habit not found" });
+        }
+
+        if (name) {
+            habit.name = name;
+        }
+
+        if (description) {
+            habit.description = description;
+        }
+
+        if (frequency) {
+            habit.frequency = frequency;
+        }
+
+        if (target) {
+            habit.target = target;
+        }
+
+        await habit.save();
+
+        return res.status(200).json({ habit, message: "Habit updated successfully" });
+    } catch (error: any) {
+        console.error(error);
+        return res.status(500).json({ message: "Error updating habit", error: error instanceof Error ? error.message : error });
+    }
+};
