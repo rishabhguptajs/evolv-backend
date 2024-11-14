@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
+import habitRoutes from './routes/habitRoutes';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
@@ -29,6 +30,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/habits', habitRoutes);
 
 const port = process.env.PORT || 8080 || 5000 || 5173 || 10000 || 3100;
 
