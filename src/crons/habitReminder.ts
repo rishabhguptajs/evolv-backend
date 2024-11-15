@@ -3,6 +3,7 @@ import Habit from '../models/habitSchema';
 import User from '../models/userSchema';
 import sendEmail from '../utils/sendEmail';
 
+// This cron job will run at 8:00 AM every day
 export const dailyHabitReminder = cron.schedule('0 8 * * *', async () => {
     try {
         const habits = await Habit.find({ frequency: 'daily' });
@@ -21,6 +22,7 @@ export const dailyHabitReminder = cron.schedule('0 8 * * *', async () => {
     }
 });
 
+// This cron job will run at 8:00 AM on the first day of every week
 export const weeklyHabitReminder = cron.schedule('0 8 * * 1', async () => {
     try {
         const habits = await Habit.find({ frequency: 'weekly' });
@@ -39,6 +41,7 @@ export const weeklyHabitReminder = cron.schedule('0 8 * * 1', async () => {
     }
 });
 
+// This cron job will run at 8:00 AM on the first day of every month
 export const monthlyHabitReminder = cron.schedule('0 8 1 * *', async () => {
     try {
         const habits = await Habit.find({ frequency: 'monthly' });
