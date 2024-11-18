@@ -21,15 +21,14 @@ dailyHabitReminder.start()
 weeklyHabitReminder.start()
 monthlyHabitReminder.start()
 
-app.use(express.json())
-app.use(morgan("dev"))
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: "Too many requests from this IP, please try again later.",
 })
 
+app.use(express.json())
+app.use(morgan("dev"))
 app.use(limiter)
 
 app.get("/", (req: Request, res: Response) => {
