@@ -1,11 +1,11 @@
-import express, { Request, Response, Router } from "express"
+import express, { Request, Response } from "express"
 import passport from "../config/passport"
 import {
   loginController,
   signupController,
 } from "../controllers/authController"
 
-const router: Router = express.Router()
+const router = express.Router()
 
 // @desc    Auth with Google
 router.get(
@@ -17,81 +17,29 @@ router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req: Request, res: Response) => {
-    const user = req.user as any;
-    
+    const user = req.user as any
+
     // Set user data in HTTP-only cookie
-    res.cookie('user', JSON.stringify({
-      email: user.personal_info.email,
-      firstName: user.personal_info.first_name,
-      lastName: user.personal_info.last_name,
-      profilePicture: user.personal_info.profile_picture,
-      provider: 'google'
-    }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    });
+    res.cookie(
+      "user",
+      JSON.stringify({
+        email: user.personal_info.email,
+        firstName: user.personal_info.first_name,
+        lastName: user.personal_info.last_name,
+        profilePicture: user.personal_info.profile_picture,
+        provider: "google",
+      }),
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      }
+    )
 
-    res.redirect(process.env.CLIENT_REDIRECT_URL || "http://localhost:3000/dashboard")
-  }
-)
-
-// @desc   Auth with Facebook
-router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }))
-
-router.get(
-  "/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
-  (req: Request, res: Response) => {
-    const user = req.user as any;
-    
-    // Set user data in HTTP-only cookie
-    res.cookie('user', JSON.stringify({
-      email: user.personal_info.email,
-      firstName: user.personal_info.first_name,
-      lastName: user.personal_info.last_name,
-      profilePicture: user.personal_info.profile_picture,
-      provider: 'facebook'
-    }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    });
-
-    res.redirect(process.env.CLIENT_REDIRECT_URL || "http://localhost:3000/dashboard")
-  }
-)
-
-// @desc    Auth with Github
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["profile", "email"] })
-)
-
-router.get(
-  "/github/callback",
-  passport.authenticate("github", { failureRedirect: "/login" }),
-  (req: Request, res: Response) => {
-    const user = req.user as any;
-    
-    // Set user data in HTTP-only cookie
-    res.cookie('user', JSON.stringify({
-      email: user.personal_info.email,
-      firstName: user.personal_info.first_name,
-      lastName: user.personal_info.last_name,
-      profilePicture: user.personal_info.profile_picture,
-      username: user.personal_info.username,
-      provider: 'github'
-    }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    });
-
-    res.redirect(process.env.CLIENT_REDIRECT_URL || "http://localhost:3000/dashboard")
+    res.redirect(
+      process.env.CLIENT_REDIRECT_URL || "http://localhost:3000/dashboard"
+    )
   }
 )
 
@@ -102,7 +50,7 @@ router.get("/logout", (req: Request, res: Response) => {
       return res.status(500).send({ message: "Logout error", error: err })
     }
     // Clear the cookie on logout
-    res.clearCookie('user');
+    res.clearCookie("user")
     res.redirect(process.env.CLIENT_REDIRECT_URL || "http://localhost:3000")
   })
 })

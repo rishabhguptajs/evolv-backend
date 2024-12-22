@@ -1,7 +1,6 @@
 import passport from "passport"
 import dotenv from "dotenv"
 import { Strategy as GoogleStrategy } from "passport-google-oauth20"
-import { Strategy as GithubStrategy } from "passport-github2"
 import User from "../models/userSchema"
 
 dotenv.config()
@@ -52,68 +51,6 @@ passport.use(
           if (!existingOauth) {
             user.oauth_info!.push({
               provider: "google",
-              provider_id: profile.id,
-              access_token: accessToken,
-              refresh_token: refreshToken,
-              expires_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
-            })
-            await user.save()
-          }
-        }
-        done(null, user)
-      } catch (error) {
-        done(error, null)
-      }
-    }
-  )
-)
-
-// Github OAuth Strategy
-passport.use(
-  new GithubStrategy(
-    {
-      clientID: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-      callbackURL: "/auth/github/callback",
-    },
-    async (
-      accessToken: string,
-      refreshToken: string,
-      profile: any,
-      done: (error: any, user?: any) => void
-    ) => {
-      try {
-        let user = await User.findOne({
-          "personal_info.email": profile.emails[0].value,
-        })
-
-        if (!user) {
-          user = new User({
-            personal_info: {
-              first_name: profile.displayName,
-              email: profile.emails[0].value,
-              profile_picture: profile.photos?.[0]?.value,
-              username: profile.username,
-            },
-            oauth_info: [
-              {
-                provider: "github",
-                provider_id: profile.id,
-                access_token: accessToken,
-                refresh_token: refreshToken,
-                expires_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000),
-              },
-            ],
-          })
-          await user.save()
-        } else {
-          // Update existing user with GitHub provider info if not already present
-          const existingOauth = user.oauth_info?.find(
-            (oauth) => oauth.provider_id === profile.id
-          )
-          if (!existingOauth) {
-            user.oauth_info!.push({
-              provider: "github",
               provider_id: profile.id,
               access_token: accessToken,
               refresh_token: refreshToken,

@@ -41,7 +41,7 @@ const userSchema = new Schema<UserInterface>({
         },
         provider: {
             type: String,
-            enum: ['google', 'github'],
+            enum: ['google'],
         },
         provider_id: {
             type: String,
