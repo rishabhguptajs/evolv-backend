@@ -21,6 +21,7 @@ const app: Application = express()
 dotenv.config()
 
 connectDB()
+
 dailyHabitReminder.start()
 weeklyHabitReminder.start()
 monthlyHabitReminder.start()
