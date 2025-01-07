@@ -31,6 +31,9 @@ const projectionSchema = new Schema({
         success_probability: {
             type: Number,
         },
+        details: {
+            type: String,
+        }
     }
 }, { timestamps: true });
 
