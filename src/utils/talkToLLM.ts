@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const talkToLLM = async(url: string, data: any, method: string, instructions: any, requirements: any) => {
+const talkToLLM = async(url: string, data: any, method: string, instructions: any) => {
     try {
         const response = await axios.request({
             method: method,
@@ -23,7 +23,7 @@ const talkToLLM = async(url: string, data: any, method: string, instructions: an
                         "role": "system",
                         "content": {
                             "type": "text",
-                            "text": requirements
+                            "text": `The following is the user data you will use to generate the projection: ${JSON.stringify(data)}.`
                         }
                     }
                 ]
